@@ -1,49 +1,56 @@
 import React from 'react';
-import type { Recipe } from '../types/Recipe';
+import type { RecipeListItem } from '../types/Recipe';
 import './RecipeCard.css';
 
 interface RecipeCardProps {
-  recipe: Recipe;
-  onClick: (recipe: Recipe) => void;
+  recipe: RecipeListItem;
+  onClick: (recipe: RecipeListItem) => void;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
+  const formatTime = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours > 0) {
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    }
+    return `${remainingMinutes}m`;
+  };
+
   return (
     <div className="recipe-card" onClick={() => onClick(recipe)}>
       <div className="recipe-image">
-        <img src={recipe.image} alt={recipe.name} />
-        {recipe.label && (
-          <div
-            className="recipe-label"
-            style={{
-              backgroundColor: recipe.label.backgroundColor,
-              color: recipe.label.foregroundColor
-            }}
-          >
-            {recipe.label.text}
-          </div>
-        )}
+        <img src={recipe.main_image_url} alt={recipe.title} />
       </div>
       <div className="recipe-content">
-        <h3 className="recipe-title">{recipe.name}</h3>
-        {recipe.headline && (
-          <p className="recipe-headline">{recipe.headline}</p>
+        <h3 className="recipe-title">{recipe.title}</h3>
+        {recipe.subtitle && (
+          <p className="recipe-headline">{recipe.subtitle}</p>
         )}
         <div className="recipe-meta">
-          {recipe.prepTime && (
-            <span className="prep-time">
-              ⏱️ {recipe.prepTime.replace('PT', '').replace('M', ' min')}
-            </span>
-          )}
-          {recipe.nutrition && (
-            <span className="calories">
-              🔥 {recipe.nutrition.calories} cal
-            </span>
-          )}
+          <span className="prep-time">
+            ⏱️ Prep: {formatTime(recipe.prep_time_minutes)}
+          </span>
+          <span className="cook-time">
+            🍳 Cook: {formatTime(recipe.cook_time_minutes)}
+          </span>
+          <span className="servings">
+            👥 Serves {recipe.base_servings}
+          </span>
         </div>
-        {recipe.category && (
-          <span className="recipe-category">{recipe.category}</span>
+        {recipe.categories.length > 0 && (
+          <div className="recipe-categories">
+            {recipe.categories.map((category) => (
+              <span key={category.category_id} className="recipe-category">
+                {category.name}
+              </span>
+            ))}
+          </div>
         )}
+        <div className="recipe-creator">
+          By {recipe.creator.username}
+        </div>
       </div>
     </div>
   );

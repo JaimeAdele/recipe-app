@@ -243,6 +243,30 @@
   color: #666;
 }
 
+.recipe-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.recipe-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.recipe-loading p {
+  color: #666;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   .recipe-hero {
     grid-template-columns: 1fr;
@@ -261,5 +285,204 @@
   .tab-button {
     white-space: nowrap;
     flex-shrink: 0;
+  }
+}
+
+/* Ingredients Tab Styles */
+.ingredients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.serving-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.serving-selector label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1em;
+}
+
+.servings-select {
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 1em;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.servings-select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.ingredients-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.ingredient-item:hover {
+  background: #e9ecef;
+}
+
+.ingredient-amount {
+  min-width: 120px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ingredient-amount .amount {
+  font-weight: 600;
+  color: #007bff;
+  font-size: 1em;
+}
+
+.ingredient-name {
+  flex: 1;
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* Instructions Tab Styles */
+.instructions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.instruction-step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.step-number {
+  background: #007bff;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1em;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-text {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.step-text p {
+  margin: 0 0 12px 0;
+}
+
+.step-text ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.step-text li {
+  margin-bottom: 8px;
+}
+
+.step-timers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.timer {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+}
+
+.timer-name {
+  font-weight: 600;
+  color: #856404;
+}
+
+.timer-duration {
+  color: #6c757d;
+}
+
+.step-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.step-image {
+  max-width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+  .ingredients-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ingredient-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ingredient-amount {
+    min-width: auto;
+    text-align: left;
+  }
+
+  .instruction-step {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-number {
+    align-self: flex-start;
+  }
+
+  .step-image {
+    max-width: 100%;
+    height: 200px;
   }
 }
