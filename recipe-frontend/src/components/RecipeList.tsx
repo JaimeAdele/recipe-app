@@ -15,10 +15,14 @@ const RecipeList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingElementRef = useRef<HTMLDivElement | null>(null);
 
-  const loadRecipes = useCallback(async (offset = 0, isSearch = false, searchQuery = '') => {
+  // Use ref to store the latest function to avoid recreating it
+  const loadRecipesRef = useRef<(offset?: number, isSearch?: boolean, searchQuery?: string) => Promise<void>>();
+
+  loadRecipesRef.current = async (offset = 0, isSearch = false, searchQuery = '') => {
     try {
       if (offset === 0) {
         setLoading(true);
@@ -50,29 +54,57 @@ const RecipeList: React.FC = () => {
       setLoading(false);
       setLoadingMore(false);
     }
+  };
+
+  const loadRecipes = useCallback((offset?: number, isSearch?: boolean, searchQuery?: string) => {
+    return loadRecipesRef.current?.(offset, isSearch, searchQuery);
   }, []);
 
   const handleRecipeClick = (recipe: RecipeListItem) => {
     navigate(`/recipe/${recipe.recipe_id}`);
   };
 
-  const handleSearch = useCallback((term: string) => {
-    setSearchTerm(term);
-    loadRecipes(0, true, term);
-  }, [loadRecipes]);
+  const handleSearchInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  }, []);
 
-  // Initial load
-  useEffect(() => {
-    loadRecipes(0);
-  }, [loadRecipes]);
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchTerm(searchInput);
+    }
+  }, [searchInput]);
 
-  // Infinite scroll setup
+  const handleSearchSubmit = useCallback(() => {
+    setSearchTerm(searchInput);
+  }, [searchInput]);
+
+  // Trigger search when searchTerm changes (instant search)
   useEffect(() => {
-    const loadMore = () => {
-      if (!loadingMore && hasMore && !loading) {
-        loadRecipes(recipes.length, !!searchTerm, searchTerm);
-      }
-    };
+    loadRecipesRef.current?.(0, !!searchTerm, searchTerm);
+  }, [searchTerm]);
+
+  // Initial load only once
+  useEffect(() => {
+    loadRecipesRef.current?.(0);
+  }, []);
+
+  // Memoize the load more function - make it stable by using refs for current values
+  const loadMoreRef = useRef<() => void>();
+  loadMoreRef.current = () => {
+    if (!loadingMore && hasMore && !loading) {
+      loadRecipes(recipes.length, !!searchTerm, searchTerm);
+    }
+  };
+
+  const loadMore = useCallback(() => {
+    loadMoreRef.current?.();
+  }, []);
+
+  // Infinite scroll setup - stable observer
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -92,7 +124,7 @@ const RecipeList: React.FC = () => {
         observerRef.current.disconnect();
       }
     };
-  }, [recipes.length, loadingMore, hasMore, loading, searchTerm, loadRecipes]);
+  }, []); // Empty dependency array - observer is stable
 
   if (loading && recipes.length === 0) {
     return (
@@ -126,13 +158,23 @@ const RecipeList: React.FC = () => {
         <p>Discover delicious recipes from our collection</p>
 
         <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search recipes..."
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="search-input"
-          />
+          <div className="search-wrapper">
+            <input
+              type="text"
+              placeholder="Search recipes... (Press Enter to search)"
+              value={searchInput}
+              onChange={handleSearchInputChange}
+              onKeyDown={handleKeyDown}
+              className="search-input"
+            />
+            <button
+              onClick={handleSearchSubmit}
+              className="search-button"
+              type="button"
+            >
+              🔍
+            </button>
+          </div>
         </div>
       </header>
 
