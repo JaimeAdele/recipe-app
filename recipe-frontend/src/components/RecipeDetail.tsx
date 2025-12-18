@@ -149,12 +149,12 @@ const RecipeDetail: React.FC<RecipeDetailProps> = () => {
       </div>
 
       <div className="recipe-tabs">
-        <button
+        {/* <button
           className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
-        </button>
+        </button> */}
         {recipe.ingredients && recipe.ingredients.length > 0 && (
           <button
             className={`tab-button ${activeTab === 'ingredients' ? 'active' : ''}`}
